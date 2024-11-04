@@ -2,6 +2,7 @@ import numpy as np
 from tensorflow.keras.datasets import cifar10
 from tensorflow.keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
+from tensorflow.keras.regularizers import l2
 from tensorflow.keras.layers import Input, Conv2D, MaxPooling2D, GlobalAveragePooling2D, Activation, BatchNormalization, Dropout, Flatten, Dense
 from tensorflow.keras.models import Model
 
@@ -64,35 +65,42 @@ class CnnModel:
     def create_model(verbose=True):
         size = CnnModel.input_size
         input_tensor = Input(shape=(size, size, 3))
+        
         # Block1
-        x = Conv2D(filters=32, kernel_size=3, padding='same', kernel_initializer='he_normal', activation='relu')(
-            input_tensor)
-        x = Conv2D(filters=32, kernel_size=3, padding='same', kernel_initializer='he_normal')(x)
-        x = Activation('relu')(x)
+        x = Conv2D(filters=32, kernel_size=3, padding='same', kernel_initializer='he_normal', activation='relu', 
+                    kernel_regularizer=l2(0.001))(input_tensor)
+        x = Conv2D(filters=32, kernel_size=3, padding='same', kernel_initializer='he_normal', activation='relu', 
+                    kernel_regularizer=l2(0.001))(x)
         x = MaxPooling2D(pool_size=2)(x)
         x = BatchNormalization()(x)
+        
         # Block2
-        x = Conv2D(filters=64, kernel_size=3, padding='same', kernel_initializer='he_normal', activation='relu')(x)
-        x = Conv2D(filters=64, kernel_size=3, padding='same', kernel_initializer='he_normal')(x)
-        x = Activation('relu')(x)
+        x = Conv2D(filters=64, kernel_size=3, padding='same', kernel_initializer='he_normal', activation='relu', 
+                    kernel_regularizer=l2(0.001))(x)
+        x = Conv2D(filters=64, kernel_size=3, padding='same', kernel_initializer='he_normal', activation='relu', 
+                    kernel_regularizer=l2(0.001))(x)
         x = MaxPooling2D(pool_size=2)(x)
         x = BatchNormalization()(x)
+        
         # Block3
-        x = Conv2D(filters=128, kernel_size=3, padding='valid', kernel_initializer='he_normal', activation='relu')(x)
-        x = Conv2D(filters=128, kernel_size=3, padding='same', kernel_initializer='he_normal')(x)
-        x = Activation('relu')(x)
+        x = Conv2D(filters=128, kernel_size=3, padding='valid', kernel_initializer='he_normal', activation='relu', 
+                    kernel_regularizer=l2(0.001))(x)
+        x = Conv2D(filters=128, kernel_size=3, padding='same', kernel_initializer='he_normal', activation='relu', 
+                    kernel_regularizer=l2(0.001))(x)
         x = MaxPooling2D(pool_size=2)(x)
         x = BatchNormalization()(x)
+        
         # Block4
-        x = Conv2D(filters=256, kernel_size=3, strides=2, padding='same', kernel_initializer='he_normal')(x)
-        x = Activation('relu')(x)
+        x = Conv2D(filters=256, kernel_size=3, strides=2, padding='same', kernel_initializer='he_normal', activation='relu', 
+                    kernel_regularizer=l2(0.001))(x)
         x = BatchNormalization()(x)
-        # Classfier Layer
-        x = Flatten()(x)  #GlobalAveragePooling2D 사용 안함 => imageGenerator인 복잡한 이미지 증강 기법을 적용하고 있으므로 더 많은 정보를 보존 하기 위해서 Flatten 사용
-        x = Dropout(rate=0.4)(x)
-        x = Dense(units=256, kernel_initializer='he_normal', activation='relu')(x)
-        x = Dropout(rate=0.3)(x)
-        x = Dense(units=64, kernel_initializer='he_normal', activation='relu')(x)
+        
+        # Classifier Layer
+        x = Flatten()(x)
+        x = Dropout(rate=0.2)(x)
+        x = Dense(units=256, kernel_initializer='he_normal', activation='relu', kernel_regularizer=l2(0.001))(x)
+        x = Dropout(rate=0.2)(x)
+        x = Dense(units=64, kernel_initializer='he_normal', activation='relu', kernel_regularizer=l2(0.001))(x)
         output = Dense(units=10, activation='softmax')(x)
 
         model = Model(inputs=input_tensor, outputs=output)
