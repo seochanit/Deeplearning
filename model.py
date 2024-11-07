@@ -1,11 +1,11 @@
-from CNN import PreprocessData, CnnModel
+from CNN_version2 import PreprocessData, CnnModel
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import ReduceLROnPlateau, EarlyStopping
 import matplotlib.pyplot as plt
 
 # 데이터 전처리 및 모델 초기화
-datasets = PreprocessData(valid_size=0.15, random_state=42, scaling=False)
+datasets = PreprocessData(valid_size=0.1, random_state=42, scaling=False)
 tr_images, tr_ohe_labels, val_images, val_ohe_labels, test_images, test_ohe_labels = datasets.preprocess_data()
 
 model = CnnModel.create_model(verbose=True)
@@ -14,7 +14,7 @@ model = CnnModel.create_model(verbose=True)
 tr_gen = ImageDataGenerator(
     horizontal_flip=True,
     vertical_flip=True,
-    rescale=1/255.0,
+    rescale=1/255.0, 
     rotation_range=30,  # 줄임
     width_shift_range=0.1,
     height_shift_range=0.1,
@@ -24,6 +24,7 @@ tr_gen = ImageDataGenerator(
 val_gen = ImageDataGenerator(rescale=1/255.0)
 
 # 데이터 생성기
+
 flow_tr_gen = tr_gen.flow(x=tr_images, y=tr_ohe_labels, batch_size=128, shuffle=True)  # 배치 크기 조정
 flow_val_gen = val_gen.flow(x=val_images, y=val_ohe_labels, batch_size=128, shuffle=False)
 

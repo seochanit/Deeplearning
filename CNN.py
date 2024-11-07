@@ -19,6 +19,7 @@ class PreprocessData:
 
     def scaled_pixels(self, images, labels):
         if self.scaling:
+            
             images = np.array(images / 255.0, dtype=np.float32)
         else:
             images = np.array(images, dtype=np.float32)
