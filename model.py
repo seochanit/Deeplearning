@@ -43,6 +43,8 @@ test_gen = ImageDataGenerator(rescale=1/255.0)
 flow_test_gen = test_gen.flow(x=test_images, y=test_ohe_labels, batch_size=32, shuffle=False)
 test_hist = model.evaluate(flow_test_gen)
 
+
+
 # 학습 기록 그래프
 history = tr_hist.history
 
