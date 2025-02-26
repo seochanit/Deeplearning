@@ -46,6 +46,7 @@ test_hist = model.evaluate(flow_test_gen)
 
 
 # 학습 기록 그래프
+
 history = tr_hist.history
 
 # 손실 및 정확도 그래프 그리기
